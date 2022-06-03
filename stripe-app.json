@@ -1,0 +1,25 @@
+{
+  "id": "com.saasbase.reetail",
+  "version": "0.0.1",
+  "name": "Reetail",
+  "icon": "",
+  "permissions": [],
+  "app_backend": {
+    "webhooks": null
+  },
+  "ui_extension": {
+    "views": [
+      {
+        "viewport": "stripe.dashboard.customer.detail",
+        "component": "App"
+      }
+    ],
+    "actions": [],
+    "content_security_policy": {
+      "connect-src": null,
+      "image-src": null,
+      "purpose": ""
+    }
+  },
+  "post_install_action": null
+}
