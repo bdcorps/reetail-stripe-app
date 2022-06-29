@@ -6,8 +6,12 @@ import {
   Button,
   Inline,
   Link,
+  Banner,
+  LineChart,
 } from "@stripe/ui-extension-sdk/ui";
 import type { ExtensionContextValue } from "@stripe/ui-extension-sdk/context";
+import SummaryTable from "../components/summaryTable";
+import { SalesChart } from "../components/salesChart";
 import BrandIcon from "./brand_icon.svg";
 
 const HomeOverviewView = ({
@@ -16,10 +20,30 @@ const HomeOverviewView = ({
 }: ExtensionContextValue) => {
   // state props
   const isLoggedIn = false;
+  const hasStore = true;
+  const showSyncBanner = true;
   const name = "Sukh";
+  const sales = [
+    {
+      date: "Jan",
+      sold: 1,
+    },
+    {
+      date: "Feb",
+      sold: 4,
+    },
+    {
+      date: "Mar",
+      sold: 2,
+    },
+    {
+      date: "Apr",
+      sold: 7,
+    },
+  ];
 
   return isLoggedIn ? (
-    <ContextView title='Get started'>
+    <ContextView title='Get started' brandIcon={BrandIcon} brandColor='#eee'>
       <Box
         css={{
           background: "container",
@@ -82,42 +106,73 @@ const HomeOverviewView = ({
   ) : (
     <ContextView
       title='Get started'
+      brandIcon={BrandIcon}
+      brandColor='#eee'
       externalLink={{
         label: "Go to Reetail dashboard",
         href: "https://stripe.com/docs/stripe-apps",
       }}
     >
-      <Box css={{ layout: "column", width: "fill" }}>
-        <Inline css={{ font: "heading", fontWeight: "bold" }}>
-          Welcome {name}
-        </Inline>
-        <Inline css={{ marginTop: "xsmall" }}>
-          Reetail lets you create a storefront with a single click.
-        </Inline>
-        <Inline css={{ marginTop: "medium", marginBottom: "large" }}>
-          {
-            "Click the button below to deploy a store filled with your Stripe products. It's that easy!"
-          }
-        </Inline>
-        <Button type='primary' css={{ width: "fill", alignX: "center" }}>
-          <Box
-            css={{
-              layout: "row",
-              gap: "small",
-              alignY: "center",
-            }}
-          >
-            <Icon name='new' size='xsmall' />
-            <Inline
+      {hasStore ? (
+        <Box>
+          {showSyncBanner && (
+            <Banner
+              type='caution'
+              title='2 products out of sync'
+              description='You have unpublished changes'
+              onDismiss={() => console.log("hello world")}
+              actions={
+                <Button onPress={() => console.log("hello world")}>
+                  <Box
+                    css={{
+                      layout: "row",
+                      gap: "small",
+                      alignY: "center",
+                    }}
+                  >
+                    <Icon name='refresh' size='xsmall' />
+                    {"Publish to store"}
+                  </Box>
+                </Button>
+              }
+            />
+          )}
+          <SummaryTable />
+          <SalesChart sales={sales} />
+        </Box>
+      ) : (
+        <Box css={{ layout: "column", width: "fill" }}>
+          <Inline css={{ font: "heading", fontWeight: "bold" }}>
+            {`Welcome ${name}`}
+          </Inline>
+          <Inline css={{ marginTop: "xsmall" }}>
+            Reetail lets you create a storefront with a single click.
+          </Inline>
+          <Inline css={{ marginTop: "medium", marginBottom: "large" }}>
+            {
+              "Click the button below to deploy a store filled with your Stripe products. It's that easy!"
+            }
+          </Inline>
+          <Button type='primary' css={{ width: "fill", alignX: "center" }}>
+            <Box
               css={{
-                fontWeight: "semibold",
+                layout: "row",
+                gap: "small",
+                alignY: "center",
               }}
             >
-              {"Create my Reetail store"}
-            </Inline>
-          </Box>
-        </Button>
-      </Box>
+              <Icon name='new' size='xsmall' />
+              <Inline
+                css={{
+                  fontWeight: "semibold",
+                }}
+              >
+                {"Create my Reetail store"}
+              </Inline>
+            </Box>
+          </Button>
+        </Box>
+      )}
     </ContextView>
   );
 };
