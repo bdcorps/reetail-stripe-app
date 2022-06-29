@@ -14,19 +14,17 @@ const HomeOverviewView = ({
   userContext,
   environment,
 }: ExtensionContextValue) => {
-  return (
-    <ContextView
-      title='Get started'
-      externalLink={{
-        label: "View docs",
-        href: "https://stripe.com/docs/stripe-apps",
-      }}
-    >
+  // state props
+  const isLoggedIn = false;
+  const name = "Sukh";
+
+  return isLoggedIn ? (
+    <ContextView title='Get started'>
       <Box
         css={{
           background: "container",
           borderRadius: "medium",
-          marginTop: "small",
+          marginTop: "medium",
           padding: "large",
           wordBreak: "break-all",
           stack: "x",
@@ -79,6 +77,46 @@ const HomeOverviewView = ({
         <Link href='https://www.stripe.com' target='_blank'>
           Sign up
         </Link>
+      </Box>
+    </ContextView>
+  ) : (
+    <ContextView
+      title='Get started'
+      externalLink={{
+        label: "Go to Reetail dashboard",
+        href: "https://stripe.com/docs/stripe-apps",
+      }}
+    >
+      <Box css={{ layout: "column", width: "fill" }}>
+        <Inline css={{ font: "heading", fontWeight: "bold" }}>
+          Welcome {name}
+        </Inline>
+        <Inline css={{ marginTop: "xsmall" }}>
+          Reetail lets you create a storefront with a single click.
+        </Inline>
+        <Inline css={{ marginTop: "medium", marginBottom: "large" }}>
+          {
+            "Click the button below to deploy a store filled with your Stripe products. It's that easy!"
+          }
+        </Inline>
+        <Button type='primary' css={{ width: "fill", alignX: "center" }}>
+          <Box
+            css={{
+              layout: "row",
+              gap: "small",
+              alignY: "center",
+            }}
+          >
+            <Icon name='new' size='xsmall' />
+            <Inline
+              css={{
+                fontWeight: "semibold",
+              }}
+            >
+              {"Create my Reetail store"}
+            </Inline>
+          </Box>
+        </Button>
       </Box>
     </ContextView>
   );
