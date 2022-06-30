@@ -10,38 +10,32 @@ import {
   TableRow,
 } from "@stripe/ui-extension-sdk/ui";
 
-export default function summaryTable() {
+export default function productsTable({ products }: any) {
+  if (!products) {
+    return <Inline css={{ font: "subheading" }}>No active products</Inline>;
+  }
+
   return (
     <Box>
       <Box css={{ marginTop: "medium" }}>
         <Inline css={{ font: "subheading", fontWeight: "bold" }}>
-          {"SUMMARY (LAST 24 HRS.)"}
+          {"ACTIVE PRODUCTS"}
         </Inline>
       </Box>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeaderCell>Charge type</TableHeaderCell>
-            <TableHeaderCell>Amount</TableHeaderCell>
+            <TableHeaderCell>Product</TableHeaderCell>
+            <TableHeaderCell>Total Sales</TableHeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell>Setup fee</TableCell>
-            <TableCell>$95.00</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Maintenance fee</TableCell>
-            <TableCell>$50.45</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Extra storage space (per GB)</TableCell>
-            <TableCell>$5.95</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Premium features</TableCell>
-            <TableCell>$109.00</TableCell>
-          </TableRow>
+          {products.map((product: any, i: number) => (
+            <TableRow key={`product_${i}`}>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>${product.price} x 2</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
         <TableFooter>
           <TableRow>
