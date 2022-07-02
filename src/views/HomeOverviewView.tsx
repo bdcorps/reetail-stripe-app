@@ -22,6 +22,23 @@ const HomeOverviewView = ({
 }: ExtensionContextValue) => {
   const [store, setStore] = useState<any>({ name: "" });
 
+  if (!userContext.account.name) {
+    return (
+      <ContextView title="Get started" brandIcon={BrandIcon} brandColor="#eee">
+        <Banner
+          type="critical"
+          title="No account name"
+          description="Your Stripe account needs to have a name before you can use Reetail."
+          actions={
+            <Button href="https://dashboard.stripe.com/settings/account">
+              Add account name
+            </Button>
+          }
+        />
+      </ContextView>
+    );
+  }
+
   const stripeAccountId = userContext?.account.id;
   const stripeName = `${userContext?.account.name?.trim()}'s store`;
   const stripeSubdomain = userContext?.account.name
