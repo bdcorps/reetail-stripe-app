@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "name": "Reetail",
   "icon": "",
-  "permissions": [],
+  "permissions": [
+    {
+      "permission": "product_read",
+      "purpose": "Lets Reetail sync products with your storefront"
+    }
+  ],
   "app_backend": {
     "webhooks": null
   },

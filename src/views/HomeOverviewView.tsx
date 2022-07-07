@@ -9,7 +9,7 @@ import {
   Inline,
   Link,
 } from "@stripe/ui-extension-sdk/ui";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createStoreAPI, getStoreAPI, refreshProductsAPI } from "../api";
 import ProductsTable from "../components/productsTable";
 import { SalesChart } from "../components/salesChart";
@@ -20,25 +20,6 @@ const HomeOverviewView = ({
   userContext,
   environment,
 }: ExtensionContextValue) => {
-  const [store, setStore] = useState<any>({ name: "" });
-
-  if (!userContext.account.name) {
-    return (
-      <ContextView title="Get started" brandIcon={BrandIcon} brandColor="#eee">
-        <Banner
-          type="critical"
-          title="No account name"
-          description="Your Stripe account needs to have a name before you can use Reetail."
-          actions={
-            <Button href="https://dashboard.stripe.com/settings/account">
-              Add account name
-            </Button>
-          }
-        />
-      </ContextView>
-    );
-  }
-
   const stripeAccountId = userContext?.account.id;
   const stripeName = `${userContext?.account.name?.trim()}'s store`;
   const stripeSubdomain = userContext?.account.name
@@ -46,17 +27,6 @@ const HomeOverviewView = ({
     .toLowerCase()
     .replaceAll(" ", "-")
     .slice(0, 4);
-
-  const getStore = () => {
-    getStoreAPI({ accountId: stripeAccountId }).then((data) => {
-      if (!data.error) {
-        setStore(data.data);
-      }
-    });
-  };
-  useEffect(() => {
-    getStore();
-  }, [stripeAccountId]);
 
   // state props
   const hasStore = true;
@@ -80,7 +50,37 @@ const HomeOverviewView = ({
     },
   ];
 
-  console.log("getstore", store);
+  const [store, setStore] = useState<any>({ name: "" });
+
+  const getStore = useCallback(() => {
+    getStoreAPI({ accountId: stripeAccountId }).then((data) => {
+      if (!data.error) {
+        setStore(data.data);
+      }
+    });
+  }, [stripeAccountId]);
+
+  useEffect(() => {
+    getStore();
+  }, [stripeAccountId, getStore]);
+
+  if (!userContext.account.name) {
+    return (
+      <ContextView title="Get started" brandIcon={BrandIcon} brandColor="#eee">
+        <Banner
+          type="critical"
+          title="No account name"
+          description="Your Stripe account needs to have a name before you can use Reetail."
+          actions={
+            <Button href="https://dashboard.stripe.com/settings/account">
+              Add account name
+            </Button>
+          }
+        />
+      </ContextView>
+    );
+  }
+
   if (!store) {
     return (
       <ContextView title="Get started" brandIcon={BrandIcon} brandColor="#eee">
