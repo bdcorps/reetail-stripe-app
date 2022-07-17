@@ -52,6 +52,8 @@ const HomeOverviewView = ({
 
   const [store, setStore] = useState<any>({ name: "" });
 
+  console.log({ stripeAccountId });
+
   const getStore = useCallback(() => {
     getStoreAPI({ accountId: stripeAccountId }).then((data) => {
       if (!data.error) {
@@ -159,7 +161,7 @@ const HomeOverviewView = ({
           {showSyncBanner && (
             <Banner
               type="caution"
-              title="2 products out of sync"
+              title="1 products out of sync"
               description="You have unpublished changes"
               onDismiss={() => console.log("hello world")}
               actions={
