@@ -7,6 +7,10 @@
     {
       "permission": "product_read",
       "purpose": "Lets Reetail sync products with your storefront"
+    },
+    {
+      "permission": "plan_read",
+      "purpose": "Lets Reetail sync prices with your storefront"
     }
   ],
   "app_backend": {
@@ -14,10 +18,6 @@
   },
   "ui_extension": {
     "views": [
-      {
-        "viewport": "stripe.dashboard.customer.detail",
-        "component": "App"
-      },
       {
         "viewport": "stripe.dashboard.home.overview",
         "component": "HomeOverviewView"
@@ -29,9 +29,12 @@
     ],
     "actions": [],
     "content_security_policy": {
-      "connect-src": null,
+      "connect-src": [
+        "https://edge.api.flagsmith.com/api/v1/flags/",
+        "https://reetail.store/api/"
+      ],
       "image-src": null,
-      "purpose": ""
+      "purpose": "These URLs allow the app to contact the backend to update product information and to set feature flags"
     }
   },
   "post_install_action": null

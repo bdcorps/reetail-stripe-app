@@ -4,40 +4,43 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeaderCell,
   TableRow,
 } from "@stripe/ui-extension-sdk/ui";
 
-export default function productsTable({ products }: any) {
+export const ProductsTable = ({ products }: any) => {
   if (!products) {
-    return <Inline css={{ font: "subheading" }}>No active products</Inline>;
+    return (
+      <Box css={{ marginTop: "medium" }}>
+        <Inline css={{ font: "subheading", fontWeight: "bold" }}>
+          No active products
+        </Inline>
+      </Box>
+    );
   }
 
   return (
     <Box>
-      <Box css={{ marginTop: "medium" }}>
-        <Inline css={{ font: "subheading", fontWeight: "bold" }}>
-          {"ACTIVE PRODUCTS"}
-        </Inline>
-      </Box>
+      <Inline css={{ font: "subheading", fontWeight: "bold" }}>
+        ACTIVE INVENTORY
+      </Inline>
       <Table>
         <TableHead>
           <TableRow>
             <TableHeaderCell>Product</TableHeaderCell>
-            <TableHeaderCell>Total Sales</TableHeaderCell>
+            {/* <TableHeaderCell>Total Sales</TableHeaderCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
           {products.map((product: any, i: number) => (
             <TableRow key={`product_${i}`}>
               <TableCell>{product.name}</TableCell>
-              <TableCell>${product.price} x 2</TableCell>
+              {/* <TableCell>${product.price} x 2</TableCell> */}
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
+        {/* <TableFooter>
           <TableRow>
             <TableCell>
               <Inline css={{ font: "bodyEmphasized" }}>Total</Inline>
@@ -46,8 +49,8 @@ export default function productsTable({ products }: any) {
               <Inline css={{ font: "bodyEmphasized" }}>$260.40</Inline>
             </TableCell>
           </TableRow>
-        </TableFooter>
+        </TableFooter> */}
       </Table>
     </Box>
   );
-}
+};

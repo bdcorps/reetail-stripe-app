@@ -1,9 +1,11 @@
 import axios from "axios";
 
-export const createRequest = async ({ endpoint, method, body, headers }: any) => {
+export const createRequest = async ({ endpoint, method, body, headers }: any, appEnv: string) => {
+  const domain = appEnv ? appEnv : "http://localhost:3000"
+  console.log("sukh", { endpoint, method, body, headers, appEnv })
   let res;
   try {
-    console.log(domain + endpoint)
+    console.log("sukh", domain + endpoint)
     res = await axios({
       method,
       url: domain + endpoint,
@@ -11,10 +13,8 @@ export const createRequest = async ({ endpoint, method, body, headers }: any) =>
       headers: { "Content-Type": "application/json", ...headers }
     })
   } catch (e: any) {
-    console.log(e)
+    console.log("sukh req error", e)
   }
 
   return res?.data
 }
-
-export const domain = "http://localhost:3000";
