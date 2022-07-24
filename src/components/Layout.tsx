@@ -1,21 +1,25 @@
 import flagsmith from "flagsmith";
 import { FlagsmithProvider } from "flagsmith/react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 interface LayoutProps {
   children: React.ReactElement;
 }
 
 const Layout: FunctionComponent<LayoutProps> = ({ children }: LayoutProps) => {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <FlagsmithProvider
-      options={{
-        environmentID: "XGedbsydb8oXtFbUjNQRhJ",
-      }}
-      flagsmith={flagsmith}
-    >
-      {children}
-    </FlagsmithProvider>
+    <QueryClientProvider client={queryClient}>
+      <FlagsmithProvider
+        options={{
+          environmentID: "XGedbsydb8oXtFbUjNQRhJ",
+        }}
+        flagsmith={flagsmith}
+      >
+        {children}
+      </FlagsmithProvider>
+    </QueryClientProvider>
   );
 };
 

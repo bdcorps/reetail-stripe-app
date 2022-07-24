@@ -8,8 +8,9 @@ import {
   Img,
 } from "@stripe/ui-extension-sdk/ui";
 import { useFlags } from "flagsmith/react";
-import { FunctionComponent, useEffect, useState } from "react";
-import { createProductsAPI, createStoreAPI, getStoreAPI } from "../api";
+import { FunctionComponent } from "react";
+import { createProductsAPI } from "../api";
+import { useCreateProducts, useCreateStore, useStore } from "../hooks/api";
 import BrandIcon from "../views/brand_icon.svg";
 import { ProductsTable } from "./ProductsTable";
 
@@ -29,21 +30,14 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
     .replaceAll(" ", "-")
     .slice(0, 4);
 
-  const [store, setStore] = useState<any>({});
+  const {
+    data: store,
+    isLoading,
+    isFetching,
+  } = useStore(appEnv, stripeAccountId);
 
-  console.log({ stripeAccountId });
-
-  const getStore = () => {
-    getStoreAPI({ accountId: stripeAccountId }, appEnv).then((data) => {
-      if (!data.error) {
-        setStore(data.data);
-      }
-    });
-  };
-
-  useEffect(() => {
-    getStore();
-  }, [stripeAccountId, getStore, appEnv]);
+  const { mutate: createStoreMutation } = useCreateStore(appEnv);
+  const { mutate: createProductsMutation } = useCreateProducts();
 
   if (!userContext.account.name) {
     return (
@@ -62,7 +56,7 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
     );
   }
 
-  if (!store) {
+  if (!store || JSON.stringify(store) === "{}") {
     return (
       <ContextView title="Get started" brandIcon={BrandIcon} brandColor="#eee">
         <Box
@@ -93,23 +87,16 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
           type="primary"
           css={{ width: "fill", alignX: "center" }}
           onPress={async () => {
-            await createStoreAPI(
-              {
-                accountId: stripeAccountId,
-                name: stripeName,
-                subdomain: stripeSubdomain,
-              },
-              appEnv
-            );
+            await createStoreMutation({
+              accountId: stripeAccountId,
+              name: stripeName,
+              subdomain: stripeSubdomain,
+            });
 
-            await createProductsAPI(
-              {
-                accountId: stripeAccountId,
-              },
-              appEnv
-            );
-
-            getStore();
+            await createProductsMutation({
+              appEnv,
+              accountId: stripeAccountId,
+            });
           }}
         >
           Create Store

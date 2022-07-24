@@ -8,14 +8,14 @@ import {
   TextField,
 } from "@stripe/ui-extension-sdk/ui";
 import { useFlags } from "flagsmith/react";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
+import { updateStoreSettingsAPI } from "../api";
 import {
-  createProductsAPI,
-  createStoreAPI,
-  deleteStoreAPI,
-  getStoreAPI,
-  updateStoreSettingsAPI,
-} from "../api";
+  useCreateProducts,
+  useCreateStore,
+  useDeleteStore,
+  useStore,
+} from "../hooks/api";
 
 const Settings: FunctionComponent<ExtensionContextValue> = ({
   userContext,
@@ -23,28 +23,20 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
 }: ExtensionContextValue) => {
   const flags = useFlags(["app_env"]);
   const appEnv: string = String(flags.app_env.value) || "";
-
   const stripeAccountId = userContext?.account.id;
   const stripeName = `${userContext?.account.name?.trim()}'s store`;
-  const stripeSubdomain = userContext?.account.name
-    ?.trim()
-    .toLowerCase()
-    .replaceAll(" ", "-")
-    .slice(0, 4);
+  const stripeSubdomain = userContext?.account.name;
+  const {
+    data: store,
+    isLoading,
+    isFetching,
+  } = useStore(appEnv, stripeAccountId);
 
-  const [store, setStore] = useState<any>({});
   const [status, setStatus] = useState("");
 
-  const getStore = () => {
-    getStoreAPI({ accountId: stripeAccountId }, appEnv).then((data) => {
-      console.log("sukh data", data);
-      if (data && !data.error) {
-        setStore(data.data);
-      } else {
-        setStore({});
-      }
-    });
-  };
+  const { mutate: createStoreMutation } = useCreateStore(appEnv);
+  const { mutate: createProductsMutation } = useCreateProducts();
+  const { mutate: deleteStoreMutation } = useDeleteStore();
 
   const saveSettings = async (values: any) => {
     setStatus("Saving...");
@@ -60,10 +52,11 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
     setStatus("Saved!");
   };
 
-  useEffect(() => {
-    console.log("sukh, trying to get store");
-    getStore();
-  }, [stripeAccountId, getStore, appEnv, status]);
+  // return (
+  //   <SettingsView onSave={saveSettings} statusMessage={status}>
+  //     <Box>{store && JSON.stringify(store.name)}</Box>
+  //   </SettingsView>
+  // );
 
   return (
     <SettingsView onSave={saveSettings} statusMessage={status}>
@@ -74,7 +67,8 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
           background: "container",
         }}
       >
-        {store && JSON.stringify(store) === "{}" ? (
+        {/* todo: fix this */}
+        {!store ? (
           <Box
             css={{
               background: "surface",
@@ -92,23 +86,16 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
                 type="primary"
                 css={{ alignX: "center" }}
                 onPress={async () => {
-                  await createStoreAPI(
-                    {
-                      accountId: stripeAccountId,
-                      name: stripeName,
-                      subdomain: stripeSubdomain,
-                    },
-                    appEnv
-                  );
+                  await createStoreMutation({
+                    accountId: stripeAccountId,
+                    name: stripeName,
+                    subdomain: stripeSubdomain,
+                  });
 
-                  await createProductsAPI(
-                    {
-                      accountId: stripeAccountId,
-                    },
-                    appEnv
-                  );
-
-                  getStore();
+                  await createProductsMutation({
+                    appEnv,
+                    accountId: stripeAccountId,
+                  });
                 }}
               >
                 Create Store
@@ -151,9 +138,12 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
               type="destructive"
               css={{ alignX: "center" }}
               onPress={async () => {
-                await deleteStoreAPI({ accountId: stripeAccountId }, appEnv);
+                if (!stripeAccountId) return;
+                await deleteStoreMutation({
+                  appEnv,
+                  accountId: stripeAccountId,
+                });
                 setStatus("Store deleted!");
-                await getStore();
               }}
             >
               Delete my store
