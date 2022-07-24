@@ -2,7 +2,7 @@
   "id": "com.saasbase.reetailapp",
   "version": "0.0.4",
   "name": "Reetail",
-  "icon": "./src/views/brand_icon.svg",
+  "icon": "./src/views/reetail_320.png",
   "permissions": [
     {
       "permission": "product_read",
