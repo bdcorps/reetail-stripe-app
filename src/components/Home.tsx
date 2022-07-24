@@ -9,7 +9,6 @@ import {
 } from "@stripe/ui-extension-sdk/ui";
 import { useFlags } from "flagsmith/react";
 import { FunctionComponent } from "react";
-import { createProductsAPI } from "../api";
 import { useCreateProducts, useCreateStore, useStore } from "../hooks/api";
 import BrandIcon from "../views/brand_icon.svg";
 import { ProductsTable } from "./ProductsTable";
@@ -24,11 +23,6 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
 
   const stripeAccountId = userContext?.account.id;
   const stripeName = `${userContext?.account.name?.trim()}'s store`;
-  const stripeSubdomain = userContext?.account.name
-    ?.trim()
-    .toLowerCase()
-    .replaceAll(" ", "-")
-    .slice(0, 4);
 
   const {
     data: store,
@@ -90,9 +84,10 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
             await createStoreMutation({
               accountId: stripeAccountId,
               name: stripeName,
-              subdomain: stripeSubdomain,
+              appEnv,
             });
 
+            console.log("done creating store. creatin products");
             await createProductsMutation({
               appEnv,
               accountId: stripeAccountId,
@@ -117,8 +112,8 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
         href: `https://${subdomain}.reetail.store`,
       }}
     >
-      <Box css={{ marginTop: "medium" }}>
-        {store.refreshProducts && (
+      {store.refreshProducts && (
+        <Box>
           <Banner
             type="caution"
             title="Products out of sync"
@@ -126,8 +121,11 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
             onDismiss={() => console.log("hello world")}
             actions={
               <Button
-                onPress={() => {
-                  createProductsAPI({ accountId: stripeAccountId }, appEnv);
+                onPress={async () => {
+                  await createProductsMutation({
+                    appEnv,
+                    accountId: stripeAccountId,
+                  });
                 }}
               >
                 <Box
@@ -143,7 +141,10 @@ const Home: FunctionComponent<ExtensionContextValue> = ({
               </Button>
             }
           />
-        )}
+        </Box>
+      )}
+
+      <Box css={{ marginTop: "medium" }}>
         <ProductsTable products={store?.products} />
       </Box>
     </ContextView>

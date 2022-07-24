@@ -10,7 +10,8 @@
     "flagsmith": "^3.4.1",
     "react": "17.0.2",
     "react-query": "^4.0.0",
-    "stripe": "^9.6.0"
+    "stripe": "^9.6.0",
+    "unique-names-generator": "^4.7.1"
   },
   "engines": {
     "node": ">=14"

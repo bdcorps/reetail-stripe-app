@@ -9,12 +9,12 @@ import {
 } from "@stripe/ui-extension-sdk/ui";
 import { useFlags } from "flagsmith/react";
 import { FunctionComponent, useState } from "react";
-import { updateStoreSettingsAPI } from "../api";
 import {
   useCreateProducts,
   useCreateStore,
   useDeleteStore,
   useStore,
+  useUpdateStore,
 } from "../hooks/api";
 
 const Settings: FunctionComponent<ExtensionContextValue> = ({
@@ -25,7 +25,6 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
   const appEnv: string = String(flags.app_env.value) || "";
   const stripeAccountId = userContext?.account.id;
   const stripeName = `${userContext?.account.name?.trim()}'s store`;
-  const stripeSubdomain = userContext?.account.name;
   const {
     data: store,
     isLoading,
@@ -37,14 +36,16 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
   const { mutate: createStoreMutation } = useCreateStore(appEnv);
   const { mutate: createProductsMutation } = useCreateProducts();
   const { mutate: deleteStoreMutation } = useDeleteStore();
+  const { mutate: updateStoreMutation } = useUpdateStore();
 
   const saveSettings = async (values: any) => {
     setStatus("Saving...");
     try {
-      updateStoreSettingsAPI(
-        { accountId: stripeAccountId, settings: { values } },
-        appEnv
-      );
+      updateStoreMutation({
+        accountId: stripeAccountId,
+        values,
+        appEnv,
+      });
     } catch (error) {
       setStatus("Error");
       console.error(error);
@@ -89,7 +90,7 @@ const Settings: FunctionComponent<ExtensionContextValue> = ({
                   await createStoreMutation({
                     accountId: stripeAccountId,
                     name: stripeName,
-                    subdomain: stripeSubdomain,
+                    appEnv,
                   });
 
                   await createProductsMutation({

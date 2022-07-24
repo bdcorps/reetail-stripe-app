@@ -1,6 +1,6 @@
 {
   "id": "com.saasbase.reetailapp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "name": "Reetail",
   "icon": "./src/views/brand_icon.svg",
   "permissions": [

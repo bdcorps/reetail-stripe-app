@@ -1,9 +1,14 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { adjectives, animals, colors, Config, uniqueNamesGenerator } from "unique-names-generator";
+
+const uniqueNameConfig: Config = {
+  dictionaries: [adjectives, colors, animals],
+  separator: '-',
+};
 
 const getBackendURL = (appEnv: string, endpoint: string) => {
-  const url = appEnv ? appEnv + endpoint : ("http://localhost:3000" + endpoint)
-  console.log("sukh 2.5", url)
+  const url = appEnv ? appEnv + endpoint : ("http://localhost:3000" + endpoint);
   return url;
 }
 
@@ -21,7 +26,9 @@ const useCreateStore = (appEnv: string) => {
   const queryClient = useQueryClient();
   const url = getBackendURL(appEnv, "/api/store")
 
-  return useMutation((data: any) => axios.post(url, data), {
+  return useMutation((data: any) => axios.post(url, {
+    ...data, subdomain: uniqueNamesGenerator(uniqueNameConfig)
+  }), {
     onSuccess: () => {
       queryClient.invalidateQueries("store");
     },
@@ -34,6 +41,19 @@ const useDeleteStore = () => {
     const { appEnv, accountId } = data;
     const url = getBackendURL(appEnv, `/api/store/accounts/${accountId}`);
     return axios.delete(url)
+  }, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("store");
+    },
+  });
+};
+
+const useUpdateStore = () => {
+  const queryClient = useQueryClient();
+  return useMutation((data: any) => {
+    const { appEnv, accountId, values } = data;
+    const url = getBackendURL(appEnv, `/api/store/accounts/${accountId}`);
+    return axios.patch(url, { ...values })
   }, {
     onSuccess: () => {
       queryClient.invalidateQueries("store");
@@ -58,5 +78,6 @@ export {
   useStore,
   useCreateStore,
   useCreateProducts,
-  useDeleteStore
+  useDeleteStore,
+  useUpdateStore
 };
