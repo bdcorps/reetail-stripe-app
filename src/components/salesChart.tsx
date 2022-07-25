@@ -21,9 +21,9 @@ export const SalesChart = ({ sales }: salesProps) => {
         }}
       >
         <Inline css={{ font: "body", fontWeight: "bold" }}>{"Sales"}</Inline>
-        <Icon name='info' size='xsmall' />
+        <Icon name="info" size="xsmall" />
       </Box>
-      <LineChart data={sales} x='date' y='sold' />
+      <LineChart data={sales} x="date" y="sold" />
     </Box>
   );
 };

@@ -44,4 +44,3 @@ declare module "*.pjpeg" {
   const value: any;
   export = value;
 }
-
